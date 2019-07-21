@@ -1,5 +1,4 @@
 imageio
-visvis
 Wand
 numpy
 click

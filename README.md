@@ -19,4 +19,4 @@ Output:
 
 ![QuadArt Output](examples/green-apple-quadart.jpg)
 
-__Image attribution: kstudio on freepik.com__
+_Image attribution: kstudio on freepik.com_

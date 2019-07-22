@@ -7,7 +7,6 @@ from wand.drawing import Drawing
 import imageio
 import click
 import numpy as np
-import sys
 
 
 class QuadArt:
@@ -30,7 +29,7 @@ class QuadArt:
             self.draw_avg(x, y, w, h)
 
     def too_many_colors(self, x, y, w, h):
-        if w <= 2:
+        if w * self.output_scale <= 2 or w <= 2:
             return False
         img = self.img[y:y+h,x:x+w]
         red = img[:,:,0]
@@ -115,16 +114,23 @@ class QuadArt:
 
     def generate(self, filename,
                  left=None, right=None, up=None, down=None,
-                 output_size=1024):
+                 output_size=512):
         self.img = imageio.imread(filename)
         left  = 0             if left  is None else int(self.width()  * float(left))
         right = self.width()  if right is None else int(self.width()  * float(right))
         up    = 0             if up    is None else int(self.height() * float(up))
         down  = self.height() if down  is None else int(self.height() * float(down))
         self.img = self.img[up:down,left:right]
-        if self.width() != self.height():
-            print('Image must be a square.')
-            sys.exit(1)
+        if self.width() < self.height():
+            difference = self.height() - self.width()
+            subtract_top = int(difference/2)
+            subtract_bot = difference - subtract_top
+            self.img = self.img[subtract_top:-subtract_bot,:]
+        elif self.height() < self.width():
+            difference = self.width() - self.height()
+            subtract_left = int(difference/2)
+            subtract_right = difference - subtract_left
+            self.img = self.img[:,subtract_left:-subtract_right]
 
         self.output_scale = float(output_size) / self.width()
 
@@ -150,7 +156,7 @@ class QuadArt:
 @click.option('-u', '--up', default=None, help='top pixel of image')
 @click.option('-d', '--down', default=None, help='bottom pixel of image')
 @click.option('-o', '--output', default=None, help='name of file to save result to')
-@click.option('-s', '--size', default=1024, help='Output size')
+@click.option('-s', '--size', default=512, help='Output size')
 @click.option('-t', '--type', 'draw_type', default='circle', help='Draw type')
 @click.option('--thresh', default=10, help='Standard deviation threshold for color difference')
 def main(filename, left, right, up, down, output, size, draw_type, thresh):

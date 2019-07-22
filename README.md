@@ -2,17 +2,17 @@
 
 Simple module for generating QuadTree art
 
-## Example usage
-
 Input:
+
 ![QuadArt Input](https://image.freepik.com/free-photo/green-apple-with-leaves_1101-453.jpg)
 
 Output:
+
 ![QuadArt Output](examples/green-apple-quadart.jpg)
 
 _Image attribution: kstudio on freepik.com_
 
-### Through Shell
+## Example usage through shell
 
 Setup:
 ```bash
@@ -27,7 +27,7 @@ $ wget https://image.freepik.com/free-photo/green-apple-with-leaves_1101-453.jpg
 $ ./quadart.py green-apple-with-leaves_1101-453.jpg --thresh 40
 ```
 
-### As a python module
+## Example usage as a python module
 
 QuadArt isn't currently a pip module, so you first need to clone it first before you can use it.
 

@@ -7,6 +7,31 @@ from wand.drawing import Drawing
 import imageio
 import click
 import numpy as np
+import time
+
+
+def loading_bar(recurse_depth):
+    global load_progress
+    global start_time
+    load_depth=3
+    try:
+        load_progress
+        start_time
+    except:
+        load_progress = 0
+        start_time = time.time()
+        print('[' + ' '*(4**load_depth) + ']\r', end='')
+    if recurse_depth <= load_depth:
+        load_progress += 4**(load_depth - recurse_depth)
+        cur_time = time.time()
+        time_left = 4**load_depth*(cur_time - start_time)/load_progress \
+                  - cur_time + start_time
+        print('[' + '='*load_progress \
+                  + ' '*(4**load_depth - load_progress) \
+                  + '] ' \
+                  + 'time left: {} secs'.format(int(time_left)).ljust(19) \
+                  + '\r', end='')
+
 
 
 class QuadArt:
@@ -22,6 +47,7 @@ class QuadArt:
     def recursive_draw(self, x, y, w, h):
         '''Draw the QuadArt recursively
         '''
+
         if (self.max_recurse_depth == 0 or self.recurse_depth < self.max_recurse_depth) \
         and self.too_many_colors(int(x), int(y), int(w), int(h)):
             self.recurse_depth += 1
@@ -32,8 +58,14 @@ class QuadArt:
             self.recursive_draw(x + w/2.0, y + h/2.0, w/2.0, h/2.0)
 
             self.recurse_depth -= 1
+
+            if self.recurse_depth == 3:
+                loading_bar(self.recurse_depth)
         else:
             self.draw_avg(x, y, w, h)
+
+            if self.recurse_depth < 3:
+                loading_bar(self.recurse_depth)
 
     def too_many_colors(self, x, y, w, h):
         if w * self.output_scale <= 2 or w <= 2:

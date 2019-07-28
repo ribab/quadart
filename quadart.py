@@ -10,21 +10,28 @@ import numpy as np
 
 
 class QuadArt:
-    def __init__(self, std_thresh=10, draw_type='circle'):
+    def __init__(self, std_thresh=10, draw_type='circle', max_recurse=None):
         self.img = None
         self.canvas = None
         self.draw = None
         self.std_thresh = std_thresh
         self.draw_type = draw_type
+        self.recurse_depth = 0
+        self.max_recurse_depth = max_recurse
 
     def recursive_draw(self, x, y, w, h):
         '''Draw the QuadArt recursively
         '''
-        if self.too_many_colors(int(x), int(y), int(w), int(h)):
+        if (self.max_recurse_depth == 0 or self.recurse_depth < self.max_recurse_depth) \
+        and self.too_many_colors(int(x), int(y), int(w), int(h)):
+            self.recurse_depth += 1
+
             self.recursive_draw(x,         y,         w/2.0, h/2.0)
             self.recursive_draw(x + w/2.0, y,         w/2.0, h/2.0)
             self.recursive_draw(x,         y + h/2.0, w/2.0, h/2.0)
             self.recursive_draw(x + w/2.0, y + h/2.0, w/2.0, h/2.0)
+
+            self.recurse_depth -= 1
         else:
             self.draw_avg(x, y, w, h)
 
@@ -159,8 +166,9 @@ class QuadArt:
 @click.option('-s', '--size', default=512, help='Output size')
 @click.option('-t', '--type', 'draw_type', default='circle', help='Draw type')
 @click.option('--thresh', default=10, help='Standard deviation threshold for color difference')
-def main(filename, left, right, up, down, output, size, draw_type, thresh):
-    quadart = QuadArt(std_thresh=thresh, draw_type=draw_type)
+@click.option('-m', '--max-recurse', 'max_recurse', default=0, help='Maximum allowed recursion depth. Default is infinity.')
+def main(filename, left, right, up, down, output, size, draw_type, thresh, max_recurse):
+    quadart = QuadArt(std_thresh=thresh, draw_type=draw_type, max_recurse=max_recurse)
     quadart.generate(filename, left=left, right=right,
                                up=up, down=down,
                                output_size=size)

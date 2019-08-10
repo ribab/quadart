@@ -2,6 +2,8 @@
 
 Simple module for generating QuadTree art
 
+featured in [codingwithricky.com](http://www.codingwithricky.com/2019/08/03/1-quadtree-photo-stylizer-python/)
+
 Input                                                                           |  Output
 :------------------------------------------------------------------------------:|:--------------------------------------:
 ![](https://image.freepik.com/free-photo/green-apple-with-leaves_1101-453.jpg)  |  ![](examples/green-apple-quadart.jpg)
